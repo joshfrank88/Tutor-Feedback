@@ -41,24 +41,23 @@ export const renderFeedbackFlow = ai.defineFlow(
           6. Next lesson preview
 
           CRITICAL FORMATTING RULES:
-          - Write in full, flowing PROSE under each heading. NO bullet points. NO lists. NO dashes.
-          - Do NOT use bullet points anywhere.
+          - Write in full, flowing PROSE under each heading. NO bullet points. NO lists. NO dashes. Proper sentences and paragraphs only.
 
-          LENGTH: Aim for 200-300 words total. Each section gets at least 2-3 sentences.
+          LENGTH: 250-400 words total. Each section should be meaty — 3-5 sentences minimum.
 
           SECTION-SPECIFIC GUIDANCE:
-          
-          "Knowledge reviewed": Describe the topics and activities we did this session as connected prose. Explain the purpose behind each task — what skill it was building and why that matters for ${studentName}'s English development overall.
 
-          "New knowledge": Describe any new vocabulary, grammar structures, or concepts introduced. For each, briefly justify WHY it was introduced — what it does for ${studentName}'s English (e.g. helps with range, expressiveness, accuracy, fluency).
+          "Knowledge reviewed": This is the longest section. Name EACH activity or exercise by type (e.g. "sentence expansion drill", "homework review", "reading practice", "oral Q&A"). For each, describe what ${studentName} did, how they got on, and what the pedagogical purpose was — what English skill it develops and why it matters at this stage of their learning. Write it so a parent can picture exactly what happened in the lesson.
 
-          "Areas for improvement": Be warm but honest. Recognise a genuine strength first, then identify 1-2 specific weaknesses with a concrete, practical suggestion for how to fix each one. Make this feel personal — tied to what actually happened in the session, not generic advice.
+          "New knowledge": Name each new word, phrase, or grammar concept introduced. Then explain in plain English WHY we introduced it — what it adds to ${studentName}'s English toolkit (e.g. 'expands vocabulary range', 'helps produce more natural-sounding sentences', 'builds accuracy with tense'). Don't just state the item — justify its inclusion.
 
-          "Progress made": Note observable progress from this session specifically.
+          "Areas for improvement": Open by genuinely recognising something ${studentName} is doing well or improving on. Then identify 1-2 specific things to keep working on — tied to actual moments from the session (e.g. a specific error pattern observed). Offer a concrete, practical suggestion for how to address each one. Make this feel personal and encouraging, not like a generic critique.
 
-          "Homework assigned": State it clearly and briefly.
+          "Progress made": A warm, honest assessment of what was accomplished. Draw on the student's energy, any moments of breakthrough, and the overall_session_feel field if available. This is where a touch of genuine enthusiasm belongs.
 
-          "Next lesson preview": One or two sentences on what's coming up and why.
+          "Homework assigned": State exactly what was set and why it supports the session's learning goals.
+
+          "Next lesson preview": What's coming next and how it connects to what was covered today.
 
           Parent-safe, evidence-based, no sensitive or mental health content.
         `;
@@ -90,20 +89,27 @@ export const renderFeedbackFlow = ai.defineFlow(
 
         const response = await ai.generate({
             prompt: `
-        You are a professional educational writer and tutor.
-        Your job is to take structured "truth JSON" from a tutoring session and write feedback tailored for a specific platform.
+        You are a professional educational writer — warm, specific, and genuinely enthusiastic about teaching.
+        Your job is to take richly structured "truth JSON" from a tutoring session and write feedback for a specific platform.
         
         THE STUDENT'S NAME IS: ${studentName || 'the student'}
         Use this name naturally throughout. DO NOT use any other student's name.
         
+        THE JSON CONTAINS:
+        - knowledge_reviewed / new_knowledge / strengths / areas_for_improvement:
+          Each item has: 'claim' (what happened), 'exercise_type' (what kind of activity), 'student_performance' (how they did), 'evidence' (exact quote).
+          USE ALL OF THESE FIELDS. 'exercise_type' tells you what to call the activity. 'student_performance' tells you how to describe their performance. 'evidence' gives you a real quote to anchor things.
+        - overall_session_feel: A holistic sense of the session's energy and vibe. Use this to add warmth and authenticity.
+
         ABSOLUTE RULES:
-        - You MUST NOT introduce any claims not present in the truth JSON.
-        - You MUST NOT include anything from 'tutor_private_notes'.
-        - You MUST reference SPECIFIC things from the session — actual words covered, specific exercises, what the student said or did.
-        - Be CONCRETE. No vague generalisations. If a vocabulary word is in the data, name it. If a technique was practised, describe it.
-        - AVOID bullet points and lists unless the platform explicitly instructs them. Prefer flowing prose.
-        - Add a small touch of human warmth — a moment of genuine enthusiasm, a small observation — so the feedback doesn't feel machine-generated.
-        - Where relevant, build a bridge to previous feedback themes (e.g. if a recurring area for improvement appears again, acknowledge the pattern and frame it as something to keep working on).
+        - Do NOT introduce any claims not in the truth JSON.
+        - Do NOT include anything from 'tutor_private_notes'.
+        - Name SPECIFIC exercises and activities by their type — don't say "we did some practice", say "during a sentence expansion drill" or "while reviewing the written homework".
+        - Describe HOW ${studentName} actually did, not just what was covered. Use the student_performance field.
+        - Add human warmth. This shouldn't read like a template. A small moment of genuine enthusiasm («this was a really solid session», «it was great to see», «one thing that stood out») goes a long way.
+        - Where a recurring theme or weakness appears (e.g. article usage, tense errors), acknowledge the pattern explicitly and frame it as ongoing work.
+        - British spelling and natural UK phrasing throughout.
+        - No mention of AI, prompts, transcripts, or internal process.
 
         --- TUTOR PERSONA & VOICE ---
         ${personaInstructions}
@@ -118,7 +124,7 @@ export const renderFeedbackFlow = ai.defineFlow(
         ---
       `,
             config: {
-                temperature: 0.4,
+                temperature: 0.45,
             }
         });
 
