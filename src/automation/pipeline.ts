@@ -2,7 +2,7 @@
  * Reusable automation pipeline — shared between the poller and the web UI.
  * Runs: fetchNotes → detectStudent → extractTruth → renderFeedback → saveSession → logToNotion
  */
-import { fetchLatestGranolaNotes, getMcpClient } from '../lib/mcpClient';
+import { fetchLatestGranolaNotes, fetchDocumentWithTranscript, getMcpClient } from '../lib/mcpClient';
 import { extractTruthFlow } from '../genkit/flows/extractTruth';
 import { renderFeedbackFlow } from '../genkit/flows/renderFeedback';
 import { validateAndFixFlow } from '../genkit/flows/validateAndFix';
@@ -34,24 +34,10 @@ export function detectStudentFromTitle(title: string): string | null {
 }
 
 /**
- * Fetch Granola notes for a specific document ID.
+ * Fetch Granola notes + transcript for a specific document ID.
  */
 export async function fetchDocumentNotes(client: Client, docId: string): Promise<{ title: string; notes: string } | null> {
-    const docResult = await client.callTool({
-        name: "get_granola_document",
-        arguments: { id: docId }
-    }) as any;
-
-    if (docResult.content?.[0]?.type === "text") {
-        try {
-            const parsed = JSON.parse(docResult.content[0].text);
-            const notes = parsed.markdown || parsed.content || '';
-            if (notes && notes.trim().length > 50) {
-                return { title: parsed.title || 'Unknown', notes };
-            }
-        } catch { /* skip */ }
-    }
-    return null;
+    return fetchDocumentWithTranscript(client, docId);
 }
 
 /**
