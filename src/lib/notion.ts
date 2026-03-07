@@ -1,11 +1,13 @@
 import { Client } from "@notionhq/client";
 import { getPresets } from "./presets";
 
-const notion = new Client({
-    auth: process.env.NOTION_TOKEN,
-});
+function getNotionClient() {
+    return new Client({ auth: process.env.NOTION_TOKEN });
+}
 
-const databaseId = process.env.NOTION_DATABASE_ID;
+function getDatabaseId() {
+    return process.env.NOTION_DATABASE_ID;
+}
 
 export async function logSessionToNotion({
     studentName,
@@ -16,6 +18,7 @@ export async function logSessionToNotion({
     feedbackText: string;
     date?: string;
 }) {
+    const databaseId = getDatabaseId();
     if (!databaseId) {
         console.warn("No NOTION_DATABASE_ID found in environment variables.");
         return;
@@ -74,6 +77,7 @@ export async function logSessionToNotion({
             }
         };
 
+        const notion = getNotionClient();
         const response = await notion.pages.create({
             parent: { database_id: databaseId },
             properties,
