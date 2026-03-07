@@ -95,10 +95,14 @@ async function poll() {
     }
 
     // Check for new, unprocessed documents
-    // Special case: First ever run — we just save all current IDs as a baseline and do not process them
     if (processed.size === 0) {
-        log('First ever run: Mapping current meetings as a baseline to prevent duplicate processing.');
-        docs.forEach((d: any) => processed.add(d.id));
+        log('First ever run: Mapping current completed meetings as a baseline to prevent duplicate processing.');
+        for (const d of docs) {
+            const result = await fetchDocumentNotes(client, d.id);
+            if (result) {
+                processed.add(d.id);
+            }
+        }
         saveProcessed(processed);
         return;
     }
