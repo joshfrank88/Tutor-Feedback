@@ -3,8 +3,8 @@ export function validateFeedback(text: string, platform: string): string[] {
     const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
 
     if (platform === 'humanities') {
-        if (words < 100 || words > 200) {
-            errors.push(`Word count is ${words}, but must be between 100 and 200.`);
+        if (words < 150 || words > 300) {
+            errors.push(`Word count is ${words}, but must be between 150 and 300.`);
         }
         if (text.includes('\n\n') || text.match(/^[-*]/m)) {
             errors.push(`Must be a single paragraph with NO bullets or line breaks.`);
@@ -12,8 +12,13 @@ export function validateFeedback(text: string, platform: string): string[] {
     }
 
     if (platform === 'intergreat') {
-        if (words < 50 || words > 140) {
-            errors.push(`Word count is ${words}, but must be between 50 and 140.`);
+        if (words < 150 || words > 350) {
+            errors.push(`Word count is ${words}, but must be between 150 and 350.`);
+        }
+
+        // Bullet points are banned on intergreat
+        if (text.match(/^\s*[-*]\s/m)) {
+            errors.push('Bullet points are not allowed on Intergreat. Use flowing prose.');
         }
 
         const expectedHeadings = [
@@ -45,8 +50,8 @@ export function validateFeedback(text: string, platform: string): string[] {
     }
 
     if (platform === 'privateTutee') {
-        if (words < 60 || words > 120) {
-            errors.push(`Word count is ${words}, but must be between 60 and 120.`);
+        if (words < 80 || words > 200) {
+            errors.push(`Word count is ${words}, but must be between 80 and 200.`);
         }
 
         const requiredHeadings = ['Wins', 'Next steps', 'Homework'];
@@ -70,8 +75,8 @@ export function validateFeedback(text: string, platform: string): string[] {
     }
 
     if (platform === 'keystoneQuick') {
-        if (words < 40 || words > 90) {
-            errors.push(`Word count is ${words}, but must be between 40 and 90.`);
+        if (words < 60 || words > 120) {
+            errors.push(`Word count is ${words}, but must be between 60 and 120.`);
         }
     }
 
