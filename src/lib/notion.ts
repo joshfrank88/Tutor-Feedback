@@ -39,10 +39,10 @@ export async function logSessionToNotion({
                     },
                 ],
             },
-            // "Date & Time" (Date property)
+            // "Date & Time" (Date property) — store full datetime for precise chronological ordering
             "Date & Time": {
                 date: {
-                    start: date.split("T")[0],
+                    start: date, // full ISO datetime e.g. "2026-03-08T15:34:00.000Z"
                 },
             },
             // "Person" (Multi-select property containing student names)
